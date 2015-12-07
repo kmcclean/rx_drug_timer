@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Alert_Builder_Test</string>
     <string name ="pill_name_text_view">Pill Name</string>
-    <string name = "time_to_take_text_view">Alarm Time</string>
+    <string name = "time_to_take_text_view">Set Alarm</string>
     <string name="interval_text_view">Interval Between Pills</string>
     <string name="pharmacy_text_view">Pharmacy</string>
     <string name="pharmacy_no_text_view">Pharmacy #</string>
