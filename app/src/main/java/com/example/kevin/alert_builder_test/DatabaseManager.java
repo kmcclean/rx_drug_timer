@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class DatabaseManager {
 
 
@@ -35,7 +37,7 @@ public class DatabaseManager {
         this.context = c;
         helper = new SQLHelper(c);
         this.db = helper.getWritableDatabase();
-        helper.onCreate(db);
+        //helper.onCreate(db);
     }
 
     public void close() {
@@ -50,7 +52,7 @@ public class DatabaseManager {
         //Creates a new database to use.
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("DROP TABLE IF EXISTS " + DB_TABLE);
+           // db.execSQL("DROP TABLE IF EXISTS " + DB_TABLE);
             String createTable = "CREATE TABLE " + DB_TABLE + " (" + pillNaCol + " TEXT, " + pharmNaCol + " TEXT, " +
                     pharmNumCol + " INTEGER, " + doctorNaCol + " TEXT, " + doctorNumCol + " INTEGER, " + nextPillTimeCol + " STRING, "
                     + intervalCol + " INTEGER, " + pillCountCol + " INTEGER, " + infoCol + " TEXT);";
@@ -83,6 +85,26 @@ public class DatabaseManager {
             cursor.close();
         }
         return tableRows;
+    }
+
+    public ArrayList<ArrayList<String>> fetchDisplay(){
+        String cols[] = {pillNaCol, nextPillTimeCol, infoCol};
+        ArrayList<ArrayList<String>> displayList = new ArrayList();
+        Cursor cursor = db.query(DB_TABLE, cols, null, null, null, null, nextPillTimeCol);
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            ArrayList<String> pillDisplay = new ArrayList<>();
+            pillDisplay.add(0, cursor.getString(0));
+            pillDisplay.add(1, cursor.getString(1));
+            pillDisplay.add(2, cursor.getString(3));
+            displayList.add(pillDisplay);
+
+            cursor.moveToNext();
+        }
+        if(!cursor.isClosed()){
+            cursor.close();
+        }
+        return displayList;
     }
 
     //adds a new alarm to the system.
