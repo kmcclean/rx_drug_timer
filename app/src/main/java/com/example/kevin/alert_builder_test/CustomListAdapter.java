@@ -2,6 +2,7 @@ package com.example.kevin.alert_builder_test;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +21,9 @@ public class CustomListAdapter extends ArrayAdapter {
     ArrayList<ArrayList<String>> displayList;
 
     public CustomListAdapter(Activity a, ArrayList<ArrayList<String>> alals){
-        super(a, R.layout.custom_list_adapter_view);
+        super(a, R.layout.custom_list_adapter_view, alals);
         this.displayList = alals;
         this.activity = a;
-
     }
 
     @Override
@@ -39,4 +39,6 @@ public class CustomListAdapter extends ArrayAdapter {
         mInfo.setText(pillData.get(2));
         return v;
     }
+
+
 }

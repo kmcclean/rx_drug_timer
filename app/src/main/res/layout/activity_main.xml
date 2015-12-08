@@ -9,10 +9,9 @@
 
 
     <ListView
-        android:id="@+id/list"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
     </ListView>
 
     <android.support.design.widget.FloatingActionButton
@@ -23,6 +22,5 @@
         android:clickable="true"
         android:src="@drawable/ic_plus"
         >
-
     </android.support.design.widget.FloatingActionButton>
 </LinearLayout>

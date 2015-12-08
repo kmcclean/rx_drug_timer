@@ -96,7 +96,7 @@ public class DatabaseManager {
             ArrayList<String> pillDisplay = new ArrayList<>();
             pillDisplay.add(0, cursor.getString(0));
             pillDisplay.add(1, cursor.getString(1));
-            pillDisplay.add(2, cursor.getString(3));
+            pillDisplay.add(2, cursor.getString(2));
             displayList.add(pillDisplay);
 
             cursor.moveToNext();

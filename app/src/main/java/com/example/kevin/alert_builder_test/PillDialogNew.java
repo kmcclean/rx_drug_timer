@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-public class PillDialog extends DialogFragment {
+public class PillDialogNew extends DialogFragment {
 
 
     AlertDialog.Builder adb;
@@ -27,7 +27,6 @@ public class PillDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View v = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_layout, null);
-
         adb = new AlertDialog.Builder(getActivity());
         adb.setView(v);
         mPillNameEditText = (EditText) v.findViewById(R.id.pill_name_edit_text);
@@ -51,7 +50,7 @@ public class PillDialog extends DialogFragment {
                 time = Integer.toString(mTimePicker.getCurrentHour()) + ":" + Integer.toString(mTimePicker.getCurrentMinute());
 
                 //calls the mainActivity method which runs the info. While best practice seems...
-                //to be to run this using onActivityResult, this was not working, so running it in...
+                //to be to run the onActivityResult in the mainActivity, this was not working, so running it in...
                 //this form is the current solution.
                 MainActivity a = (MainActivity)getActivity();
                 a.changeTextView(mPillNameEditText.getText().toString(),
@@ -63,12 +62,13 @@ public class PillDialog extends DialogFragment {
                         Integer.parseInt(mPillCountEditText.getText().toString()),
                         Integer.parseInt(mIntervalEditText.getText().toString()),
                         mInfoEditText.getText().toString());
+                a.updateAdapter();
             }
         });
+
         adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
             }
         });
         return adb.create();
