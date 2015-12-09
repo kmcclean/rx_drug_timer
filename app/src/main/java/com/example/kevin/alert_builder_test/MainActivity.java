@@ -86,6 +86,7 @@ public class MainActivity extends ListActivity {
         if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, time, interval, pillCount, info)){
             Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, time, interval, pillCount, info);
             savedPills.add(p);
+            updateAdapter();
             Toast.makeText(MainActivity.this, "New pill alarm has been set.", Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -101,8 +102,10 @@ public class MainActivity extends ListActivity {
             for (Pill pill : savedPills) {
                 if (pillID == pill.getPillID()) {
                     savedPills.remove(pill);
+
                 }
             }
+            updateAdapter();
             Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
         }
         else {
@@ -125,6 +128,7 @@ public class MainActivity extends ListActivity {
                     pill.setInformation(info);
                 }
             }
+            updateAdapter();
             Toast.makeText(MainActivity.this, "Pill alarm updated.", Toast.LENGTH_SHORT).show();
         }
         else {

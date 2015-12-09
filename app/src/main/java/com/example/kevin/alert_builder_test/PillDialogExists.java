@@ -40,25 +40,29 @@ public class PillDialogExists extends DialogFragment{
             mPillNameEditText.setText(b.getString("name"));
 
             mIntervalEditText = (EditText) v.findViewById(R.id.interval_edit_text);
-            mInfoEditText.setText(b.getInt("length"));
+            Integer interval = b.getInt("length");
+            mIntervalEditText.setText(interval.toString());
 
             mPharmacyEditText = (EditText) v.findViewById(R.id.pharmacy_edit_text);
             mPharmacyEditText.setText(b.getString("pharmarcy"));
 
             mPharmacyNoEditText = (EditText) v.findViewById(R.id.pharmacy_no_edit_text);
-            mPharmacyNoEditText.setText(b.getString("pharmNo"));
+            Long pharmacyNumber = b.getLong("pharmNo");
+            mPharmacyNoEditText.setText(pharmacyNumber.toString());
 
             mDoctorEditText = (EditText) v.findViewById(R.id.doctor_edit_text);
             mDoctorEditText.setText(b.getString("docName"));
 
             mDoctorNoEditText = (EditText) v.findViewById(R.id.doctor_no_edit_text);
-            mDoctorNoEditText.setText(b.getString("docNo"));
+            Long doctorNumber = b.getLong("docNo");
+            mDoctorNoEditText.setText(doctorNumber.toString());
 
             mInfoEditText = (EditText) v.findViewById(R.id.info_edit_text);
             mInfoEditText.setText(b.getString("info"));
 
             mPillCountEditText = (EditText) v.findViewById(R.id.pill_count_edit_text);
-            mPillCountEditText.setText(b.getString("count"));
+            Integer count = b.getInt("count");
+            mPillCountEditText.setText(count.toString());
 
             mTimePicker = (TimePicker) v.findViewById(R.id.first_drug_time_picker);
 
