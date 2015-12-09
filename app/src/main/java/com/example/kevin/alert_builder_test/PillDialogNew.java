@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import java.util.Calendar;
 
 public class PillDialogNew extends DialogFragment {
 
@@ -52,8 +55,10 @@ public class PillDialogNew extends DialogFragment {
                 //calls the mainActivity method which runs the info. While best practice seems...
                 //to be to run the onActivityResult in the mainActivity, this was not working, so running it in...
                 //this form is the current solution.
+                Calendar c = Calendar.getInstance();
+                Long id = c.getTimeInMillis();
                 MainActivity a = (MainActivity)getActivity();
-                a.changeTextView(mPillNameEditText.getText().toString(),
+                if(a.addNewPill(id, mPillNameEditText.getText().toString(),
                         mPharmacyEditText.getText().toString(),
                         Long.parseLong(mPharmacyNoEditText.getText().toString()),
                         mDoctorEditText.getText().toString(),
@@ -61,8 +66,10 @@ public class PillDialogNew extends DialogFragment {
                         time,
                         Integer.parseInt(mPillCountEditText.getText().toString()),
                         Integer.parseInt(mIntervalEditText.getText().toString()),
-                        mInfoEditText.getText().toString());
-                a.updateAdapter();
+                        mInfoEditText.getText().toString())){
+                        a.updateAdapter();
+                }
+
             }
         });
 

@@ -1,8 +1,6 @@
 package com.example.kevin.alert_builder_test;
 
 import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +16,9 @@ public class CustomListAdapter extends ArrayAdapter {
     TextView mNextTimeToTake;
     TextView mInfo;
 
-    ArrayList<ArrayList<String>> displayList;
+    ArrayList<Pill> displayList;
 
-    public CustomListAdapter(Activity a, ArrayList<ArrayList<String>> alals){
+    public CustomListAdapter(Activity a, ArrayList<Pill> alals){
         super(a, R.layout.custom_list_adapter_view, alals);
         this.displayList = alals;
         this.activity = a;
@@ -30,13 +28,13 @@ public class CustomListAdapter extends ArrayAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = activity.getLayoutInflater();
         View v = inflater.inflate(R.layout.custom_list_adapter_view, null, true);
-        ArrayList<String> pillData = displayList.get(position);
+        Pill p = displayList.get(position);
         mPillName = (TextView)v.findViewById(R.id.pill_name_adapter_view_text_view);
-        mPillName.setText(pillData.get(0));
+        mPillName.setText(p.getPillName());
         mNextTimeToTake = (TextView)v.findViewById(R.id.next_time_to_take_adapter_view_text_view);
-        mNextTimeToTake.setText(pillData.get(1));
+        mNextTimeToTake.setText(p.getNextPillTime());
         mInfo = (TextView)v.findViewById(R.id.info_adapter_view_text_view);
-        mInfo.setText(pillData.get(2));
+        mInfo.setText(p.getInformation());
         return v;
     }
 

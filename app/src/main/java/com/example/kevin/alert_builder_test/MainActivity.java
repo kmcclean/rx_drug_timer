@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,10 +18,10 @@ public class MainActivity extends ListActivity {
     android.support.design.widget.FloatingActionButton fab;
     ListView lv;
     CustomListAdapter cla;
+    ArrayList<Pill> savedPills;
 
-
-    //TODO Learn: Create AlertDialog.Builder.
-    //TODO Learn: How to set alarms.
+     //TODO Learn: Create AlertDialog.Builder.
+   //TODO Learn: How to set alarms.
     //TODO 1) COMPLETED - Create the AlertDialog.
     //TODO 1b) COMPLETED - Have the data be properly pulled from the alert dialogs.
     //TODO 2) COMPLETED - Set the database so that the alert can be saved.
@@ -43,7 +44,7 @@ public class MainActivity extends ListActivity {
 
         databaseManager = new DatabaseManager(this);
         fab = (android.support.design.widget.FloatingActionButton) findViewById(R.id.fab);
-        final ArrayList<ArrayList<String>> savedPills = databaseManager.fetchDisplay();
+        savedPills = databaseManager.fetchAll();
         cla = new CustomListAdapter(this, savedPills);
         lv = (ListView) findViewById(android.R.id.list);
         lv.setAdapter(cla);
@@ -59,10 +60,20 @@ public class MainActivity extends ListActivity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Pill p = savedPills.get(position);
                 fm = getFragmentManager();
                 PillDialogExists pdn = new PillDialogExists();
                 Bundle b = new Bundle();
-                b.putStringArrayList("tag", savedPills.get(position));
+                b.putString("name",p.getPillName());
+                b.putString("pharmacy", p.getPharmacyName());
+                b.putLong("pharmNo", p.getPharmacyNo());
+                b.putString("docName", p.getDoctorName());
+                b.putLong("docNo", p.getDoctorNo());
+                b.putString("nextTime", p.getNextPillTime());
+                b.putInt("count", p.getPillCount());
+                b.putInt("length", p.getIntervalLength());
+                b.putLong("id", p.getPillID());
+                b.putString("info", p.getInformation());
                 pdn.setArguments(b);
                 pdn.setTargetFragment(pdn, 2);
                 pdn.show(fm, "TAG1");
@@ -71,8 +82,56 @@ public class MainActivity extends ListActivity {
     }
 
     //this method exists at the moment to test out the database and make sure everything is working properly.
-    public void changeTextView(String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, String time, int interval, int pillCount, String info){
-        databaseManager.addRow(pillName, pharmacy, pharmNum, doctor, doctorNum, time, interval, pillCount, info);
+    public boolean addNewPill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, String time, int interval, int pillCount, String info){
+        if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, time, interval, pillCount, info)){
+            Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, time, interval, pillCount, info);
+            savedPills.add(p);
+            Toast.makeText(MainActivity.this, "New pill alarm has been set.", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        else{
+            Toast.makeText(MainActivity.this, "There was an error creating the alarm.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    public void deletePill(Long pillID){
+
+        if(databaseManager.deleteRow(pillID)) {
+            for (Pill pill : savedPills) {
+                if (pillID == pill.getPillID()) {
+                    savedPills.remove(pill);
+                }
+            }
+            Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(MainActivity.this, "There was an error deleting the alarm", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void updatePill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, String time, int interval, int pillCount, String info){
+        if(databaseManager.updateRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, time, interval, pillCount, info)){
+            for (Pill pill: savedPills){
+                if(pillID == pill.getPillID()){
+                    pill.setPillName(pillName);
+                    pill.setPharmacyName(pharmacy);
+                    pill.setPharmacyNo(pharmNum);
+                    pill.setDoctorName(doctor);
+                    pill.setDoctorNo(doctorNum);
+                    pill.setIntervalLength(interval);
+                    pill.setNextPillTime(time);
+                    pill.setPillCount(pillCount);
+                    pill.setInformation(info);
+                }
+            }
+            Toast.makeText(MainActivity.this, "Pill alarm updated.", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(MainActivity.this, "Error updating pill alarm.", Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     public void updateAdapter(){
