@@ -23,7 +23,6 @@ public class PillDialogExists extends DialogFragment{
         EditText mPillCountEditText;
         EditText mIntervalEditText;
         EditText mInfoEditText;
-        String time;
         Long id;
 
         @Override
@@ -74,25 +73,22 @@ public class PillDialogExists extends DialogFragment{
                 public void onClick(DialogInterface dialog, int which) {
 
 
-                    time = Integer.toString(mTimePicker.getCurrentHour()) + ":" + Integer.toString(mTimePicker.getCurrentMinute());
 
                     //calls the mainActivity method to update the pill information. While best practice seems...
                     //to be to run the onActivityResult in the mainActivity, this was not working, so running it in...
                     //this form is the current solution.
                     MainActivity a = (MainActivity) getActivity();
-                    Calendar c = Calendar.getInstance();
-                    Long id = c.getTimeInMillis();
 
                     a.updatePill(id, mPillNameEditText.getText().toString(),
                             mPharmacyEditText.getText().toString(),
                             Long.parseLong(mPharmacyNoEditText.getText().toString()),
                             mDoctorEditText.getText().toString(),
                             Long.parseLong(mDoctorNoEditText.getText().toString()),
-                            time,
+                            mTimePicker.getCurrentHour(),
+                            mTimePicker.getCurrentMinute(),
                             Integer.parseInt(mPillCountEditText.getText().toString()),
                             Integer.parseInt(mIntervalEditText.getText().toString()),
                             mInfoEditText.getText().toString());
-                    a.updateAdapter();
                 }
             });
 
@@ -100,7 +96,7 @@ public class PillDialogExists extends DialogFragment{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     MainActivity a = (MainActivity) getActivity();
-                    a.deletePill(null);
+                    a.deletePill(id);
                 }
             });
 

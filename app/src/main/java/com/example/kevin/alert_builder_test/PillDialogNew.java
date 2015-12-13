@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -25,7 +24,6 @@ public class PillDialogNew extends DialogFragment {
     EditText mPillCountEditText;
     EditText mIntervalEditText;
     EditText mInfoEditText;
-    String time;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -49,26 +47,22 @@ public class PillDialogNew extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
 
 
-                //this takes all of the information that has been stored and sends it off to the database.
-                time = Integer.toString(mTimePicker.getCurrentHour()) + ":" + Integer.toString(mTimePicker.getCurrentMinute());
-
                 //calls the mainActivity method which runs the info. While best practice seems...
                 //to be to run the onActivityResult in the mainActivity, this was not working, so running it in...
                 //this form is the current solution.
                 Calendar c = Calendar.getInstance();
                 Long id = c.getTimeInMillis();
                 MainActivity a = (MainActivity)getActivity();
-                if(a.addNewPill(id, mPillNameEditText.getText().toString(),
+                a.addNewPill(id, mPillNameEditText.getText().toString(),
                         mPharmacyEditText.getText().toString(),
                         Long.parseLong(mPharmacyNoEditText.getText().toString()),
                         mDoctorEditText.getText().toString(),
                         Long.parseLong(mDoctorNoEditText.getText().toString()),
-                        time,
+                        mTimePicker.getCurrentHour(),
+                        mTimePicker.getCurrentMinute(),
                         Integer.parseInt(mPillCountEditText.getText().toString()),
                         Integer.parseInt(mIntervalEditText.getText().toString()),
-                        mInfoEditText.getText().toString())){
-                        a.updateAdapter();
-                }
+                        mInfoEditText.getText().toString());
 
             }
         });

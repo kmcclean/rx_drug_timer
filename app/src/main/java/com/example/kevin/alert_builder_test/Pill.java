@@ -5,107 +5,118 @@ package com.example.kevin.alert_builder_test;
  */
 public class Pill {
 
-    protected static String pillName;
-    protected static String pharmacyName;
-    protected static Long pharmacyNo;
-    protected static String doctorName;
-    protected static Long doctorNo;
-    protected static String nextPillTime;
-    protected static int intervalLength;
-    protected static int pillCount;
-    protected static String information;
-    protected static Long pillID;
+    protected String pillName;
+    protected String pharmacyName;
+    protected Long pharmacyNo;
+    protected String doctorName;
+    protected Long doctorNo;
+    protected int nextPillHour;
+    protected int nextPillMinute;
+    protected int intervalLength;
+    protected int pillCount;
+    protected String information;
+    protected Long pillID;
 
-    public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, String nextPillTime, int intervalLength, int pillCountRemaining, String information){
+    public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, int nextPillHour, int nextPillMinute, int intervalLength, int pillCountRemaining, String information){
         this.pillName = pillName;
         this.pharmacyName = pharmacyName;
         this.pharmacyNo = pharmacyNo;
         this.doctorName = doctorName;
         this.doctorNo = doctorNo;
-        this.nextPillTime = nextPillTime;
+        this.nextPillHour = nextPillHour;
+        this.nextPillMinute = nextPillMinute;
         this.intervalLength = intervalLength;
         this.pillCount = pillCountRemaining;
         this.information = information;
         this.pillID = id;
     }
 
-    public static int getIntervalLength() {
+    public int getIntervalLength() {
         return intervalLength;
     }
 
-    public static int getPillCount() {
+    public int getPillCount() {
         return pillCount;
     }
 
-    public static Long getPillID() {
+    public Long getPillID() {
         return pillID;
     }
 
-    public static String getPillName() {
+    public String getPillName() {
         return pillName;
     }
 
-    public static String getNextPillTime() {
-        return nextPillTime;
+    public int getNextPillHour() {
+        return nextPillHour;
     }
 
-    public static String getInformation() {
+    public String getInformation() {
         return information;
     }
 
-    public static String getPharmacyName() {
+    public String getPharmacyName() {
         return pharmacyName;
     }
 
-    public static Long getPharmacyNo() {
+    public Long getPharmacyNo() {
         return pharmacyNo;
     }
 
-    public static String getDoctorName() {
+    public String getDoctorName() {
         return doctorName;
     }
 
-    public static Long getDoctorNo() {
+    public Long getDoctorNo() {
         return doctorNo;
     }
 
-    public static void setDoctorName(String doctorName) {
-        Pill.doctorName = doctorName;
+    public int getNextPillMinute() {
+        return nextPillMinute;
     }
 
-    public static void setDoctorNo(Long doctorNo) {
-        Pill.doctorNo = doctorNo;
+    public void setDoctorName(String doctorName) {
+
+        this.doctorName = doctorName;
     }
 
-    public static void setInformation(String information) {
-        Pill.information = information;
+    public void setDoctorNo(Long doctorNo) {
+        this.doctorNo = doctorNo;
     }
 
-    public static void setIntervalLength(int intervalLength) {
-        Pill.intervalLength = intervalLength;
+    public void setInformation(String information) {
+        this.information = information;
     }
 
-    public static void setNextPillTime(String nextPillTime) {
-        Pill.nextPillTime = nextPillTime;
+    public void setIntervalLength(int intervalLength) {
+        this.intervalLength = intervalLength;
     }
 
-    public static void setPharmacyName(String pharmacyName) {
-        Pill.pharmacyName = pharmacyName;
+    public void setNextPillHour(int nextPillHour) {
+        this.nextPillHour = nextPillHour;
     }
 
-    public static void setPharmacyNo(Long pharmacyNo) {
-        Pill.pharmacyNo = pharmacyNo;
+    public void setPharmacyName(String pharmacyName) {
+        this.pharmacyName = pharmacyName;
     }
 
-    public static void setPillCount(int pillCount) {
-        Pill.pillCount = pillCount;
+    public void setPharmacyNo(Long pharmacyNo) {
+        this.pharmacyNo = pharmacyNo;
     }
 
-    public static void setPillID(Long pillID) {
-        Pill.pillID = pillID;
+    public void setPillCount(int pillCount) {
+        this.pillCount = pillCount;
     }
 
-    public static void setPillName(String pillName) {
-        Pill.pillName = pillName;
+    public void setPillID(Long pillID) {
+        this.pillID = pillID;
+    }
+
+    public void setPillName(String pillName) {
+        this.pillName = pillName;
+    }
+
+    public void setNextPillMinute(int nextPillMinute) {
+        this.nextPillMinute = nextPillMinute;
     }
 }
