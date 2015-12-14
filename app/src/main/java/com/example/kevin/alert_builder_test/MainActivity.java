@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.ConcurrentModificationException;
 import java.util.GregorianCalendar;
 
 public class MainActivity extends ListActivity {
@@ -25,16 +26,6 @@ public class MainActivity extends ListActivity {
     CustomListAdapter cla;
     ArrayList<Pill> savedPills;
 
-     //TODO Learn: Create AlertDialog.Builder.
-   //TODO Learn: How to set alarms.
-    //TODO 1) COMPLETED - Create the AlertDialog.
-    //TODO 1b) COMPLETED - Have the data be properly pulled from the alert dialogs.
-    //TODO 2) COMPLETED - Set the database so that the alert can be saved.
-    //TODO 2a) COMPLETED - Create the database.
-    //TODO 2b) COMPLETED - Have the alarm added into the database.
-    //TODO 3) COMPLETED - Retrieve the information from the database.
-    //TODO 3a) COMPLETED - Show the pills in a list at the start screen
-    //TODO 3a) When the program starts, have it display the information from the database.
     //TODO 4) Show the alarms.
     //TODO 4a) Set the information into a custom display layout, have the layout display the information.
     //TODO 5) Enable edit the alarm settings.
@@ -69,17 +60,7 @@ public class MainActivity extends ListActivity {
                 fm = getFragmentManager();
                 PillDialogExists pdn = new PillDialogExists();
                 Bundle b = new Bundle();
-                b.putString("name",p.getPillName());
-                b.putString("pharmacy", p.getPharmacyName());
-                b.putLong("pharmNo", p.getPharmacyNo());
-                b.putString("docName", p.getDoctorName());
-                b.putLong("docNo", p.getDoctorNo());
-                b.putInt("nextHour", p.getNextPillHour());
-                b.putInt("nextMinute", p.getNextPillMinute());
-                b.putInt("count", p.getPillCount());
-                b.putInt("length", p.getIntervalLength());
-                b.putLong("id", p.getPillID());
-                b.putString("info", p.getInformation());
+                b.putParcelable("pill", p);
                 pdn.setArguments(b);
                 pdn.setTargetFragment(pdn, 2);
                 pdn.show(fm, "TAG1");
@@ -91,9 +72,10 @@ public class MainActivity extends ListActivity {
     public boolean addNewPill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info){
         if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, hour, minute, interval, pillCount, info)){
             Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, hour, minute, interval, pillCount, info);
-            if(createAlarm(p.getPillID(), p.getNextPillHour(), p.nextPillMinute)) {
+            if(createAlarm(p)){
+            //if(createAlarm(p.getPillID(), p.getNextPillHour(), p.nextPillMinute)) {
                 savedPills.add(p);
-                updateAdapter(savedPills);
+                updateAdapter();
                 Toast.makeText(MainActivity.this, "New pill alarm has been set.", Toast.LENGTH_SHORT).show();
                 return true;
             }
@@ -114,8 +96,13 @@ public class MainActivity extends ListActivity {
         if(databaseManager.deleteRow(pillID)) {
             for (Pill pill : savedPills) {
                 if (pill.getPillID().equals(pillID)) {
-                    savedPills.remove(pill);
-                    updateAdapter(savedPills);
+                    try {
+                        savedPills.remove(pill);
+                    }
+                    catch(ConcurrentModificationException cmf){
+
+                    }
+                    updateAdapter();
                     Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -142,7 +129,7 @@ public class MainActivity extends ListActivity {
                     pill.setInformation(info);
                 }
             }
-            updateAdapter(savedPills);
+            updateAdapter();
             Toast.makeText(MainActivity.this, "Pill alarm updated.", Toast.LENGTH_SHORT).show();
         }
         else {
@@ -150,27 +137,27 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    public boolean createAlarm(long pillID, int hour, int minute){
-
+//    public boolean createAlarm(long pillID, int hour, int minute){
+    public boolean createAlarm(Pill p){
         try {
             AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             Intent alarmIntent = new Intent(MainActivity.this, PillAlarmReceiver.class);
 
             Calendar c = new GregorianCalendar();
-            c.set(Calendar.YEAR, Calendar.MONTH, Calendar.DATE + 1, hour, minute);
+            c.set(Calendar.YEAR, Calendar.MONTH, Calendar.DATE + 1, p.getNextPillHour(), p.getNextPillMinute());
             Log.e("MA", "System Millis: " + System.currentTimeMillis());
             Log.e("MA", "Alarm Millis: " + c.getTimeInMillis());
             Log.e("MA", "Year: " + Calendar.YEAR);
             Log.e("MA", "Month: " + Calendar.MONTH);
             Log.e("MA", "Date: " + Calendar.DATE);
             Log.e("MA", "Hour: " + c.HOUR);
-            Log.e("MA", "Year: " + Calendar.MINUTE);
+            Log.e("MA", "Minute: " + Calendar.MINUTE);
             /*while (c.getTimeInMillis() < System.currentTimeMillis()) {
                 c.set(Calendar.DATE, Calendar.DATE + 1);
             }*/
 
             Bundle b = new Bundle();
-            b.putLong("pillID", pillID);
+            b.putParcelable("pill", p);
             alarmIntent.putExtras(b);
 
             PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -190,8 +177,7 @@ public class MainActivity extends ListActivity {
         databaseManager.close();
     }
 
-    public void updateAdapter(ArrayList<Pill> pillAL){
-        cla.setDisplayList(pillAL);
+    public void updateAdapter(){
         cla.notifyDataSetChanged();
     }
 }

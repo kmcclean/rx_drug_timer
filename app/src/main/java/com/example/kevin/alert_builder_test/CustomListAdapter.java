@@ -38,7 +38,4 @@ public class CustomListAdapter extends ArrayAdapter {
         return v;
     }
 
-    public void setDisplayList(ArrayList<Pill> displayList) {
-        this.displayList = displayList;
-    }
 }

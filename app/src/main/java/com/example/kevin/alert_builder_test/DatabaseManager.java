@@ -39,7 +39,7 @@ public class DatabaseManager {
         this.context = c;
         helper = new SQLHelper(c);
         this.db = helper.getWritableDatabase();
-        //helper.onCreate(db);
+        helper.onCreate(db);
     }
 
     public void close() {
