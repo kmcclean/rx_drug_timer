@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+//the pill object is the specific object that is used to track individual drugs to and fro throughout the system.
 public class Pill implements Parcelable{
 
     private static final String NAME = "Name";
@@ -27,6 +28,7 @@ public class Pill implements Parcelable{
     protected int pillCount;
     protected String information;
     protected Long pillID;
+
 
     public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, long pillInMillis, int pillCountRemaining, int intervalLength, String information){
         this.pillName = pillName;
@@ -148,7 +150,7 @@ public class Pill implements Parcelable{
                     in.getLong(PHARM_NO),
                     in.getString(DR_NAME),
                     in.getLong(DR_NO),
-                    in.getInt(NEXT_TIME_IN_MILLIS),
+                    in.getLong(NEXT_TIME_IN_MILLIS),
                     in.getInt(I_LEN),
                     in.getInt(PILL_CT),
                     in.getString(INFO));

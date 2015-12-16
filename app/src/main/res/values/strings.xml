@@ -3,7 +3,7 @@
     <string name="app_name">Alert_Builder_Test</string>
     <string name ="pill_name_text_view">Pill Name</string>
     <string name = "time_to_take_text_view">Alarm Time</string>
-    <string name="interval_text_view">Interval Between Pills</string>
+    <string name="interval_text_view">Hours Between Pills</string>
     <string name="pharmacy_text_view">Pharmacy</string>
     <string name="pharmacy_no_text_view">Pharmacy #</string>
     <string name="pill_count_text_view">Pill Count</string>
@@ -12,4 +12,8 @@
     <string name="info_text_view">Info</string>
     <string name="save_time_button">Save</string>
     <string name="cancel_time_button">Cancel</string>
+    <string name="call_doctor_set_text">Doctor: </string>
+    <string name="low_count_warning_set_text">You are almost out of pills. Please call your doctor or pharmacy.</string>
+    <string name="call_pharmacy_set_text">Pharmacy: </string>
+    <string name="pill_count_set_text">Pills Remaining: </string>
 </resources>

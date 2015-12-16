@@ -3,10 +3,10 @@ package com.example.kevin.alert_builder_test;
 import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.ListActivity;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class MainActivity extends ListActivity {
 
@@ -25,13 +24,12 @@ public class MainActivity extends ListActivity {
     CustomListAdapter cla;
     ArrayList<Pill> savedPills;
 
-    //TODO 7) Input validation.
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         databaseManager = new DatabaseManager(this);
         fab = (android.support.design.widget.FloatingActionButton) findViewById(R.id.fab);
@@ -40,6 +38,7 @@ public class MainActivity extends ListActivity {
         lv = (ListView) findViewById(android.R.id.list);
         lv.setAdapter(cla);
 
+        //This makes sure that all the alarms are reset for your pills when you turn the program back on.
         for(Pill p : savedPills){
             createAlarm(p);
         }
@@ -69,14 +68,11 @@ public class MainActivity extends ListActivity {
         });
     }
 
+
+    //this method adds a new pill to the system, both as an object and in the database.
     public boolean addNewPill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute,  int pillCount, int interval, String info){
 
         long millis = turnTimeIntoMillis(hour, minute);
-
-
-        Log.e("MA", "System Millis: " + System.currentTimeMillis());
-        Log.e("MA", "Alarm Millis: " + millis);
-
         if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, millis, pillCount, interval, info)){
             Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, millis, pillCount, interval, info);
             if(createAlarm(p)){
@@ -100,6 +96,7 @@ public class MainActivity extends ListActivity {
     }
 
 
+    //deletes the pill from the form screen.
     public void deletePill(Long pillID){
         if(databaseManager.deleteRow(pillID)) {
             int i = -1;
@@ -109,9 +106,14 @@ public class MainActivity extends ListActivity {
                 }
             }
             try {
-                savedPills.remove(i);
-                updateAdapter();
-                Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
+                if(cancelNotification(savedPills.get(i))) {
+                    savedPills.remove(i);
+                    updateAdapter();
+                    Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Failed to delete pill alarm.", Toast.LENGTH_SHORT).show();
+                }
             }
             catch(Exception e){
                 Toast.makeText(MainActivity.this, "Failed to delete pill alarm.", Toast.LENGTH_SHORT).show();
@@ -123,13 +125,10 @@ public class MainActivity extends ListActivity {
     }
 
 
+    //when the user wants to edit this pill selection, this is method takes care of it.
     public void updatePill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int pillCount, int interval, String info){
 
         long millis = turnTimeIntoMillis(hour, minute);
-
-        Log.e("MA", "System Millis: " + System.currentTimeMillis());
-        Log.e("MA", "Alarm Millis: " + millis);
-
         if(databaseManager.updateRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, millis, pillCount, interval, info)){
             for (Pill pill: savedPills){
                 if(pill.getPillID().equals(pillID)){
@@ -159,58 +158,81 @@ public class MainActivity extends ListActivity {
             AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             Intent alarmIntent = new Intent(MainActivity.this, PillAlarmReceiver.class);
 
-
-
-            //For this one, I am building a unique Id for each of the individual drugs pendingIntents....
-            //...With pending intents, they overwrite the existing PendingIntent if unless their is something that differentiates them...
-            //...like the request code. So for mine, I have the request code linked to the id of the drug. This way, if the drug is ever...
-            //...changed, then the intent should update as well. However, the ids are too long to work as ints. So instead I am parsing out...
-            //...the middle nine digits (cutting off the last three and the first). This means that there will be a unique number of every second...
-            //...for the next 31 years. I can only hope someone uses this program for that long.
-            String s = p.getPillID().toString();
-            String[] stringList = s.split("");
-            String stringID = "";
-            for(int i = 2; i < 11; i++){
-                stringID = stringID + stringList[i];
-            }
-            Integer intID = Integer.parseInt(stringID);
-
+            Integer intID = createID(p);
             Bundle b = new Bundle();
             b.putParcelable("pill", p);
             alarmIntent.putExtras(b);
             b.putInt("notification_id", intID);
 
+            //wraps the intent inside a pending intent, and sets it to be ready to use.
             PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, intID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mAlarmManager.set(AlarmManager.RTC_WAKEUP, p.getNextTimeInMillis(), pi);
             Toast.makeText(MainActivity.this, "Alarm Set.", Toast.LENGTH_SHORT).show();
             return true;
         }
         catch (Exception e){
-            Log.e("MA", "Error: " + e.toString());
             return false;
         }
     }
 
+    //this cancels the notification, so it doesn't appear after it has been deleted from the database.
+    public boolean cancelNotification(Pill p){
+        try {
+            NotificationManager nm = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+            Integer cancelID = createID(p);
+            nm.cancel(cancelID);
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
+
+    //For this id, I am building a unique Id for each of the individual pendingIntents & their corresponding notifications....
+    //...With pending intents, they overwrite the existing PendingIntent if unless their is something that differentiates them...
+    //...like the request code. So for mine, I have the request code linked to the id of the drug. This way, if the drug is ever...
+    //...changed, then the intent should update as well. However, the ids are too long to work as ints. So instead I am parsing out...
+    //...the middle nine digits (cutting off the last three and the first). This means that there will be a unique number of every second...
+    //...for the next 31 years. I can only hope someone uses this program for that long.
+    public int createID(Pill p){
+        String s = p.getPillID().toString();
+        String[] stringList = s.split("");
+        String stringID = "";
+        for(int i = 2; i < 11; i++){
+            stringID = stringID + stringList[i];
+        }
+        Integer intID = Integer.parseInt(stringID);
+
+        return intID;
+    }
+
+    //this runs the conversion into milliseconds, which is what run alarms.
     public long turnTimeIntoMillis(int hour, int minute){
 
         Calendar c = Calendar.getInstance();
-
         c.set(Calendar.HOUR_OF_DAY, hour);
         c.set(Calendar.MINUTE, minute);
 
-        while(System.currentTimeMillis() > c.getTimeInMillis()){
-            c.set(Calendar.DATE, c.DATE + 1);
+        long l = c.getTimeInMillis();
+
+        //since there is no day on the clock, this adds a days worth of milliSeconds to the time the current millis is behind the clock time.
+        while(System.currentTimeMillis() > l){
+            l = l + 86400000;
         }
 
-        return c.getTimeInMillis();
+        return l;
     }
 
+
+    //used to close the database.
     @Override
     protected void onDestroy() {
         super.onDestroy();
         databaseManager.close();
     }
 
+    //makes sure the dataset has been updated properly.
     public void updateAdapter(){
         cla.notifyDataSetChanged();
     }

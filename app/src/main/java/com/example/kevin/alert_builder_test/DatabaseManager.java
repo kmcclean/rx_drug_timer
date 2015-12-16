@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+
 import java.util.ArrayList;
 
 public class DatabaseManager {
@@ -69,7 +70,7 @@ public class DatabaseManager {
     }
 
 
-    //returns all of the alarms thave have been created.
+    //returns all of the alarms that have have been created.
     public ArrayList<Pill> fetchAll() {
         String cols[] = {pillIDCol, pillNaCol, pharmNaCol, pharmNumCol, doctorNaCol, doctorNumCol, pillTimeInMillisCol, pillCountCol, intervalCol, infoCol};
         Cursor cursor = db.query(DB_TABLE, cols, null, null, null, null, pillNaCol);
@@ -82,7 +83,7 @@ public class DatabaseManager {
                     cursor.getLong(3),
                     cursor.getString(4),
                     cursor.getLong(5),
-                    cursor.getInt(6),
+                    cursor.getLong(6),
                     cursor.getInt(7),
                     cursor.getInt(8),
                     cursor.getString(9));
@@ -95,6 +96,7 @@ public class DatabaseManager {
         return pillArrayList;
     }
 
+    //updates a pill that has been created.
     public boolean updateRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int pillCount, int interval, String info) {
         ContentValues updatePill = new ContentValues();
         updatePill.put(pillNaCol, pillName);
@@ -110,7 +112,6 @@ public class DatabaseManager {
             db.update(DB_TABLE, updatePill, pillID.toString(), null);
             return true;
         } catch (Exception e) {
-            Log.e(DBTAG, "Error updating table into table", e);
             return false;
         }
     }
@@ -132,11 +133,11 @@ public class DatabaseManager {
             db.insertOrThrow(DB_TABLE, null, newPill);
             return true;
         } catch (Exception e) {
-            Log.e(DBTAG, "Error inserting new data into table", e);
             return false;
         }
     }
 
+    //if a pill has been taken, this drops the number of pills and changes the time for the next pill to be taken.
     public boolean pillTaken(Pill p){
         ContentValues cv = new ContentValues();
         cv.put(pillCountCol, p.getPillCount()-1);
@@ -146,18 +147,17 @@ public class DatabaseManager {
             db.update(DB_TABLE, cv, p.getPillID().toString(), null);
             return true;
         } catch (Exception e) {
-            Log.e(DBTAG, "Error with pill taken.", e);
             return false;
         }
     }
 
+    //removes a pill from the database.
     public boolean deleteRow(Long pillID){
         try {
             db.delete(DB_TABLE, pillIDCol + " = " + pillID, null);
             return true;
         }
         catch (Exception e){
-            Log.e(DBTAG, "Error deleting row");
             return false;
         }
     }

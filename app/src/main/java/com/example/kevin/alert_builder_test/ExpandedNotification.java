@@ -5,10 +5,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.TextView;
 
+//When it's time to take another pill, this calls is called by the Activity which is opened by the Notification and lets you know about it.
 public class ExpandedNotification extends DialogFragment {
 
     AlertDialog.Builder adb;
@@ -43,11 +44,16 @@ public class ExpandedNotification extends DialogFragment {
         information.setText(p.getInformation());
         Integer i = p.getPillCount();
         String s = i.toString();
-        pillCount.setText("Pills Remaining: " + s);
+        String pillCountSetText =R.string.pill_count_set_text + s;
+        pillCount.setText(pillCountSetText);
+
+        //this is set to warn you when you are almost out of pills and allows you to call your doctor/pharmacy for a refill.
         if (p.getPillCount() < 10) {
-            lowCountWarning.setText("You are almost out of pills. Please call your doctor or pharmacy.");
-            callDoctor.setText("Doctor: " + p.getDoctorNo());
-            callPharmacy.setText("Pharmacy: " + p.getPharmacyNo());
+            lowCountWarning.setText(R.string.low_count_warning_set_text);
+            String callDocString = R.string.call_doctor_set_text + p.getDoctorNo().toString();
+            callDoctor.setText(callDocString);
+            String callPharmString = R.string.call_pharmacy_set_text + p.getPharmacyNo().toString();
+            callPharmacy.setText(callPharmString);
         }
 
         adb.setPositiveButton("I have taken my pill", new DialogInterface.OnClickListener() {
@@ -59,7 +65,6 @@ public class ExpandedNotification extends DialogFragment {
 
             }
         });
-
         return adb.create();
     }
 }

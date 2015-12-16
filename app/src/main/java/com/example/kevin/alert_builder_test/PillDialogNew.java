@@ -8,11 +8,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
-
 import java.util.Calendar;
 
+//This class is opens up the DialogFragment to be used when a pill needs to be created from scratch.
 public class PillDialogNew extends DialogFragment {
-
 
     AlertDialog.Builder adb;
     EditText mPillNameEditText;
@@ -45,7 +44,6 @@ public class PillDialogNew extends DialogFragment {
         adb.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
 
                 //calls the mainActivity method which runs the info. While best practice seems...
                 //to be to run the onActivityResult in the mainActivity, this was not working, so running it in...

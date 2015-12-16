@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+//sets up the customListAdapter view with the list that shows the pills that are being taken.
 public class CustomListAdapter extends ArrayAdapter {
 
     Activity activity;
     TextView mPillName;
     TextView mNextTimeToTake;
     TextView mInfo;
-
     ArrayList<Pill> displayList;
 
     public CustomListAdapter(Activity a, ArrayList<Pill> alals){
@@ -36,5 +36,4 @@ public class CustomListAdapter extends ArrayAdapter {
         mInfo.setText(p.getInformation());
         return v;
     }
-
 }

@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import java.util.Calendar;
-
+//when a pill has been selected from the listView, this dialog opens. This allows the user to...
+//...see all of the details about the specific pill they have chosen.
 public class PillDialogExists extends DialogFragment{
 
         AlertDialog.Builder adb;
@@ -25,17 +25,16 @@ public class PillDialogExists extends DialogFragment{
         EditText mInfoEditText;
         Long id;
 
+
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             View v = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_layout, null);
             adb = new AlertDialog.Builder(getActivity());
             adb.setView(v);
 
-
             Bundle b = getArguments();
-
             Pill p = b.getParcelable("pill");
-
             id = p.getPillID();
 
             mPillNameEditText = (EditText) v.findViewById(R.id.pill_name_edit_text);

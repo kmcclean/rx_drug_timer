@@ -9,7 +9,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
-
+//When it is time for the alarm to go off, it is received by this class, which then notifies the person of the alarm, and...
+//...set it up so that they can see information about the pill they need to take.
 public class PillAlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
@@ -21,7 +22,6 @@ public class PillAlarmReceiver extends WakefulBroadcastReceiver {
         int notificationId = b.getInt("notification_id");
 
         Bundle newBundle = new Bundle();
-
         newBundle.putParcelable("pill", p);
         newBundle.putInt("notification_id", notificationId);
 
@@ -31,6 +31,7 @@ public class PillAlarmReceiver extends WakefulBroadcastReceiver {
 
         PendingIntent notification = PendingIntent.getActivity(context, notificationId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        //This sets the notification that will appear when it is time for someone to take their pills.
         NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder nb = new Notification.Builder(context);
         nb.setSmallIcon(R.mipmap.ic_launcher);

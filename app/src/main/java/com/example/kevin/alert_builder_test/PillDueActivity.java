@@ -7,9 +7,11 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
 import android.widget.Toast;
 
+//This is the activity that is called when the notification goes off. I use a different one because...
+//..this way it can be shut down more easily. I would have used a dialog on its own, but that's not allowed in Android.
 public class PillDueActivity extends AppCompatActivity {
 
     FragmentManager fm;
@@ -32,35 +34,35 @@ public class PillDueActivity extends AppCompatActivity {
         en.show(fm, "TAG1");
     }
 
+    //When a pill has been taken, this decreases the number of pills remaining, and resets the timer.
     public void pillHasBeenTaken(Pill p){
 
-
-        Log.e("PDA", "Original Next Alarm Time in Millis: " + p.getNextTimeInMillis());
+        //Since the interval is taken in hours, this increases the timer by the number of milliseconds in the selected hour amount.
         long newTime = p.getNextTimeInMillis() + (p.getIntervalLength() * 3600000);
         p.setNextTimeInMillis(newTime);
 
-        Log.e("PDA", "System Time in Millis: " + System.currentTimeMillis());
-        Log.e("PDA", "Resart Next Alarm Time in Millis: " + p.getNextTimeInMillis());
+        //this shuts down the notification, since it is not needed until next time.
+        NotificationManager nm = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+        int cancelID = b.getInt("notification_id");
+        nm.cancel(cancelID);
 
+        //this reset the alarm.
         if(restartAlarm(p)) {
             databaseManager.pillTaken(p);
-            NotificationManager nm = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
-            int cancelID = b.getInt("notification_id");
-            nm.cancel(cancelID);
-            //finish();
-            //System.exit(0);
+            finish();
+            System.exit(0);
         }
         else {
-            Toast.makeText(PillDueActivity.this, "Restarting Alarm Failed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PillDueActivity.this, "Resetting Alarm Failed.", Toast.LENGTH_SHORT).show();
         }
     }
 
+
+    //once an alarm has been finished, this will set up a new one for that drug.
     public boolean restartAlarm(Pill p ){
         try {
             AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             Intent alarmIntent = new Intent(PillDueActivity.this, PillAlarmReceiver.class);
-
-
 
             //For this one, I am building a unique Id for each of the individual drugs pendingIntents....
             //...With pending intents, they overwrite the existing PendingIntent if unless their is something that differentiates them...
@@ -87,7 +89,6 @@ public class PillDueActivity extends AppCompatActivity {
             return true;
         }
         catch (Exception e){
-            Log.e("MA", "Error: " + e.toString());
             return false;
         }
     }
