@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -23,6 +24,7 @@ public class MainActivity extends ListActivity {
     ListView lv;
     CustomListAdapter cla;
     ArrayList<Pill> savedPills;
+    AlarmManager mAlarmManager;
 
 
     @Override
@@ -30,6 +32,7 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         databaseManager = new DatabaseManager(this);
         fab = (android.support.design.widget.FloatingActionButton) findViewById(R.id.fab);
@@ -106,7 +109,7 @@ public class MainActivity extends ListActivity {
                 }
             }
             try {
-                if(cancelNotification(savedPills.get(i))) {
+                if(cancelAlarm(savedPills.get(i))) {
                     savedPills.remove(i);
                     updateAdapter();
                     Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
@@ -141,6 +144,8 @@ public class MainActivity extends ListActivity {
                     pill.setNextTimeInMillis(millis);
                     pill.setPillCount(pillCount);
                     pill.setInformation(info);
+                    cancelAlarm(pill);
+                    createAlarm(pill);
                 }
             }
             updateAdapter();
@@ -155,10 +160,11 @@ public class MainActivity extends ListActivity {
     //This creates the alarm that will actually show up.
     public boolean createAlarm(Pill p){
         try {
-            AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
             Intent alarmIntent = new Intent(MainActivity.this, PillAlarmReceiver.class);
 
             Integer intID = createID(p);
+
             Bundle b = new Bundle();
             b.putParcelable("pill", p);
             alarmIntent.putExtras(b);
@@ -167,6 +173,7 @@ public class MainActivity extends ListActivity {
             //wraps the intent inside a pending intent, and sets it to be ready to use.
             PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, intID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mAlarmManager.set(AlarmManager.RTC_WAKEUP, p.getNextTimeInMillis(), pi);
+
             Toast.makeText(MainActivity.this, "Alarm Set.", Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -176,11 +183,22 @@ public class MainActivity extends ListActivity {
     }
 
     //this cancels the notification, so it doesn't appear after it has been deleted from the database.
-    public boolean cancelNotification(Pill p){
+    public boolean cancelAlarm(Pill p){
         try {
-            NotificationManager nm = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
-            Integer cancelID = createID(p);
-            nm.cancel(cancelID);
+            Intent alarmIntent = new Intent(MainActivity.this, PillAlarmReceiver.class);
+
+            Integer intID = createID(p);
+
+            Bundle b = new Bundle();
+            b.putParcelable("pill", p);
+            alarmIntent.putExtras(b);
+            b.putInt("notification_id", intID);
+
+            //wraps the intent inside a pending intent, and sets it to be ready to use.
+            PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, intID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mAlarmManager.cancel(pi);
+
+            Toast.makeText(MainActivity.this, "Alarm Set.", Toast.LENGTH_SHORT).show();
             return true;
         }
         catch (Exception e){
