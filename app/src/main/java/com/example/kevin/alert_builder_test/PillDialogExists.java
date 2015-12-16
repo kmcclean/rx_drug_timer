@@ -64,7 +64,7 @@ public class PillDialogExists extends DialogFragment{
 
             mPillCountEditText = (EditText) v.findViewById(R.id.pill_count_edit_text);
             Integer count = p.getPillCount();
-            mPillCountEditText.setText(count);
+            mPillCountEditText.setText(count.toString());
 
             mTimePicker = (TimePicker) v.findViewById(R.id.first_drug_time_picker);
 
@@ -75,13 +75,10 @@ public class PillDialogExists extends DialogFragment{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
-
-
                     //calls the mainActivity method to update the pill information. While best practice seems...
                     //to be to run the onActivityResult in the mainActivity, this was not working, so running it in...
                     //this form is the current solution.
                     MainActivity a = (MainActivity) getActivity();
-
                     a.updatePill(id, mPillNameEditText.getText().toString(),
                             mPharmacyEditText.getText().toString(),
                             Long.parseLong(mPharmacyNoEditText.getText().toString()),

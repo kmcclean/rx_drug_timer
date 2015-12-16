@@ -11,8 +11,7 @@ public class Pill implements Parcelable{
     private static final String PHARM_NO = "pharmacy number";
     private static final String DR_NAME = "doctor name";
     private static final String DR_NO = "dr number";
-    private static final String NEXT_HOUR = "next pill time";
-    protected static final String NEXT_MINUTE = "nextPillMinute";
+    private static final String NEXT_TIME_IN_MILLIS = "next pill time";
     private static final String I_LEN = "interval len";
     private static final String PILL_CT = "pill count";
     private static final String INFO = "information";
@@ -23,21 +22,19 @@ public class Pill implements Parcelable{
     protected Long pharmacyNo;
     protected String doctorName;
     protected Long doctorNo;
-    protected int nextPillHour;
-    protected int nextPillMinute;
+    protected Long nextTimeInMillis;
     protected int intervalLength;
     protected int pillCount;
     protected String information;
     protected Long pillID;
 
-    public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, int nextPillHour, int nextPillMinute, int intervalLength, int pillCountRemaining, String information){
+    public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, long pillInMillis, int intervalLength, int pillCountRemaining, String information){
         this.pillName = pillName;
         this.pharmacyName = pharmacyName;
         this.pharmacyNo = pharmacyNo;
         this.doctorName = doctorName;
         this.doctorNo = doctorNo;
-        this.nextPillHour = nextPillHour;
-        this.nextPillMinute = nextPillMinute;
+        this.nextTimeInMillis = pillInMillis;
         this.intervalLength = intervalLength;
         this.pillCount = pillCountRemaining;
         this.information = information;
@@ -60,8 +57,8 @@ public class Pill implements Parcelable{
         return pillName;
     }
 
-    public int getNextPillHour() {
-        return nextPillHour;
+    public Long getNextTimeInMillis() {
+        return nextTimeInMillis;
     }
 
     public String getInformation() {
@@ -84,10 +81,6 @@ public class Pill implements Parcelable{
         return doctorNo;
     }
 
-    public int getNextPillMinute() {
-        return nextPillMinute;
-    }
-
     public void setDoctorName(String doctorName) {
 
         this.doctorName = doctorName;
@@ -105,8 +98,8 @@ public class Pill implements Parcelable{
         this.intervalLength = intervalLength;
     }
 
-    public void setNextPillHour(int nextPillHour) {
-        this.nextPillHour = nextPillHour;
+    public void setNextTimeInMillis(long nextTimeInMillis) {
+        this.nextTimeInMillis = nextTimeInMillis;
     }
 
     public void setPharmacyName(String pharmacyName) {
@@ -129,10 +122,6 @@ public class Pill implements Parcelable{
         this.pillName = pillName;
     }
 
-    public void setNextPillMinute(int nextPillMinute) {
-        this.nextPillMinute = nextPillMinute;
-    }
-
     @Override
     public void writeToParcel(Parcel out, int flags) {
         Bundle dest = new Bundle();
@@ -141,10 +130,9 @@ public class Pill implements Parcelable{
         dest.putLong(PHARM_NO, pharmacyNo);
         dest.putString(DR_NAME, doctorName);
         dest.putLong(DR_NO, doctorNo);
-        dest.putInt(NEXT_HOUR, nextPillHour);
-        dest.putInt(NEXT_MINUTE, nextPillMinute);
+        dest.putLong(NEXT_TIME_IN_MILLIS, nextTimeInMillis);
         dest.putInt(I_LEN, intervalLength);
-        dest.putLong(PILL_CT, pillCount);
+        dest.putInt(PILL_CT, pillCount);
         dest.putString(INFO, information);
         dest.putLong(P_ID, pillID);
 
@@ -164,8 +152,7 @@ public class Pill implements Parcelable{
                     in.getLong(PHARM_NO),
                     in.getString(DR_NAME),
                     in.getLong(DR_NO),
-                    in.getInt(NEXT_HOUR),
-                    in.getInt(NEXT_MINUTE),
+                    in.getInt(NEXT_TIME_IN_MILLIS),
                     in.getInt(I_LEN),
                     in.getInt(PILL_CT),
                     in.getString(INFO));

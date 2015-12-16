@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.ConcurrentModificationException;
 import java.util.GregorianCalendar;
 
 public class MainActivity extends ListActivity {
@@ -26,10 +25,6 @@ public class MainActivity extends ListActivity {
     CustomListAdapter cla;
     ArrayList<Pill> savedPills;
 
-    //TODO 4) Show the alarms.
-    //TODO 4a) Set the information into a custom display layout, have the layout display the information.
-    //TODO 5) Enable edit the alarm settings.
-    //TODO 6) Have the alarms go off.
     //TODO 7) Input validation.
 
 
@@ -70,15 +65,33 @@ public class MainActivity extends ListActivity {
 
     //this method exists at the moment to test out the database and make sure everything is working properly.
     public boolean addNewPill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info){
-        if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, hour, minute, interval, pillCount, info)){
-            Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, hour, minute, interval, pillCount, info);
+
+        Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.HOUR_OF_DAY, hour);
+        c.set(Calendar.MINUTE, minute);
+
+        if(System.currentTimeMillis() > c.getTimeInMillis()){
+            c.set(Calendar.DATE, c.DATE + 1);
+        }
+
+        Log.e("MA", "System Millis: " + System.currentTimeMillis());
+        Log.e("MA", "Alarm Millis: " + c.getTimeInMillis());
+        Log.e("MA", "Year: " + c.YEAR);
+        Log.e("MA", "Month: " + c.MONTH);
+        Log.e("MA", "Date: " + c.DATE);
+        Log.e("MA", "Hour: " + c.HOUR);
+        Log.e("MA", "Minute: " + c.MINUTE);
+
+        if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, c.getTimeInMillis(), interval, pillCount, info)){
+            Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum,c.getTimeInMillis(), interval, pillCount, info);
             if(createAlarm(p)){
-            //if(createAlarm(p.getPillID(), p.getNextPillHour(), p.nextPillMinute)) {
                 savedPills.add(p);
                 updateAdapter();
                 Toast.makeText(MainActivity.this, "New pill alarm has been set.", Toast.LENGTH_SHORT).show();
                 return true;
             }
+
             //if the update fails, this is to make sure that it isn't in the database without being turned into an alarm and added to the adapter. All or nothing.
             else{
                 databaseManager.deleteRow(p.getPillID());
@@ -92,29 +105,43 @@ public class MainActivity extends ListActivity {
         }
     }
 
+
     public void deletePill(Long pillID){
         if(databaseManager.deleteRow(pillID)) {
+            int i = -1;
             for (Pill pill : savedPills) {
                 if (pill.getPillID().equals(pillID)) {
-                    try {
-                        savedPills.remove(pill);
-                    }
-                    catch(ConcurrentModificationException cmf){
-
-                    }
-                    updateAdapter();
-                    Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
+                    i = savedPills.indexOf(pill);
                 }
             }
-
+            try {
+                savedPills.remove(i);
+                updateAdapter();
+                Toast.makeText(MainActivity.this, "Pill alarm has been deleted", Toast.LENGTH_SHORT).show();
+            }
+            catch(Exception e){
+                Toast.makeText(MainActivity.this, "Failed to delete pill alarm.", Toast.LENGTH_SHORT).show();
+            }
         }
         else {
             Toast.makeText(MainActivity.this, "There was an error deleting the alarm", Toast.LENGTH_SHORT).show();
         }
     }
 
+
     public void updatePill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info){
-        if(databaseManager.updateRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, hour, minute, interval, pillCount, info)){
+
+        Calendar c = new GregorianCalendar();
+        c.set(Calendar.YEAR, Calendar.MONTH, Calendar.DATE + 1, hour, minute);
+        Log.e("MA", "System Millis: " + System.currentTimeMillis());
+        Log.e("MA", "Alarm Millis: " + c.getTimeInMillis());
+        Log.e("MA", "Year: " + c.YEAR);
+        Log.e("MA", "Month: " + c.MONTH);
+        Log.e("MA", "Date: " + c.DATE);
+        Log.e("MA", "Hour: " + c.HOUR);
+        Log.e("MA", "Minute: " + c.MINUTE);
+
+        if(databaseManager.updateRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, c.getTimeInMillis(), interval, pillCount, info)){
             for (Pill pill: savedPills){
                 if(pill.getPillID().equals(pillID)){
                     pill.setPillName(pillName);
@@ -123,8 +150,7 @@ public class MainActivity extends ListActivity {
                     pill.setDoctorName(doctor);
                     pill.setDoctorNo(doctorNum);
                     pill.setIntervalLength(interval);
-                    pill.setNextPillHour(hour);
-                    pill.setNextPillMinute(minute);
+                    pill.setNextTimeInMillis(c.getTimeInMillis());
                     pill.setPillCount(pillCount);
                     pill.setInformation(info);
                 }
@@ -137,31 +163,36 @@ public class MainActivity extends ListActivity {
         }
     }
 
-//    public boolean createAlarm(long pillID, int hour, int minute){
+
+    //This creates the alarm that will actually show up.
     public boolean createAlarm(Pill p){
         try {
             AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             Intent alarmIntent = new Intent(MainActivity.this, PillAlarmReceiver.class);
 
-            Calendar c = new GregorianCalendar();
-            c.set(Calendar.YEAR, Calendar.MONTH, Calendar.DATE + 1, p.getNextPillHour(), p.getNextPillMinute());
-            Log.e("MA", "System Millis: " + System.currentTimeMillis());
-            Log.e("MA", "Alarm Millis: " + c.getTimeInMillis());
-            Log.e("MA", "Year: " + Calendar.YEAR);
-            Log.e("MA", "Month: " + Calendar.MONTH);
-            Log.e("MA", "Date: " + Calendar.DATE);
-            Log.e("MA", "Hour: " + c.HOUR);
-            Log.e("MA", "Minute: " + Calendar.MINUTE);
-            /*while (c.getTimeInMillis() < System.currentTimeMillis()) {
-                c.set(Calendar.DATE, Calendar.DATE + 1);
-            }*/
+
+
+            //For this one, I am building a unique Id for each of the individual drugs pendingIntents....
+            //...With pending intents, they overwrite the existing PendingIntent if unless their is something that differentiates them...
+            //...like the request code. So for mine, I have the request code linked to the id of the drug. This way, if the drug is ever...
+            //...changed, then the intent should update as well. However, the ids are too long to work as ints. So instead I am parsing out...
+            //...the middle nine digits (cutting off the last three and the first). This means that there will be a unique number of every second...
+            //...for the next 31 years. I can only hope someone uses this program for that long.
+            String s = p.getPillID().toString();
+            String[] stringList = s.split("");
+            String stringID = "";
+            for(int i = 2; i < 11; i++){
+                stringID = stringID + stringList[i];
+            }
+            Integer intID = Integer.parseInt(stringID);
 
             Bundle b = new Bundle();
             b.putParcelable("pill", p);
             alarmIntent.putExtras(b);
+            b.putInt("notification_id", intID);
 
-            PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            mAlarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+            PendingIntent pi = PendingIntent.getBroadcast(MainActivity.this, intID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, p.getNextTimeInMillis(), pi);
             Toast.makeText(MainActivity.this, "Alarm Set.", Toast.LENGTH_SHORT).show();
             return true;
         }

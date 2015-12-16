@@ -16,9 +16,9 @@ public class DatabaseManager {
     private SQLHelper helper;
     private SQLiteDatabase db;
 
-    protected static final String DB_NAME = "testDatabase";
+    protected static final String DB_NAME = "pillAlarmDatabase";
     protected static final int DB_VERSION = 1;
-    protected static final String DB_TABLE = "testTable";
+    protected static final String DB_TABLE = "pills";
 
     protected static final String pillIDCol = "pillID";
     protected static final String pillNaCol = "pillName";
@@ -26,8 +26,7 @@ public class DatabaseManager {
     protected static final String pharmNumCol = "pharmacyNo";
     protected static final String doctorNaCol = "doctorName";
     protected static final String doctorNumCol = "doctorNo";
-    protected static final String nextPillHourCol = "nextPillHour";
-    protected static final String nextPillMinuteCol = "nextPillMinute";
+    protected static final String pillTimeInMillisCol = "pillTimeInMillis";
     protected static final String intervalCol = "interval";
     protected static final String pillCountCol = "pillCount";
     protected static final String infoCol = "info";
@@ -42,8 +41,9 @@ public class DatabaseManager {
         helper.onCreate(db);
     }
 
+    //Closes the database - very important!
     public void close() {
-        helper.close(); //Closes the database - very important!
+        helper.close();
     }
 
     public class SQLHelper extends SQLiteOpenHelper {
@@ -54,10 +54,9 @@ public class DatabaseManager {
         //Creates a new database to use.
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("DROP TABLE IF EXISTS " + DB_TABLE);
-            String createTable = "CREATE TABLE " + DB_TABLE + " (" + pillIDCol + " INTEGER, " + pillNaCol + " TEXT, " + pharmNaCol + " TEXT, " +
-                    pharmNumCol + " INTEGER, " + doctorNaCol + " TEXT, " + doctorNumCol + " INTEGER, " + nextPillHourCol + " INTEGER, " + nextPillMinuteCol + " INTEGER, "
-                    + intervalCol + " INTEGER, " + pillCountCol + " INTEGER, " + infoCol + " TEXT);";
+            String createTable = "CREATE TABLE IF NOT EXISTS " + DB_TABLE + " (" + pillIDCol + " INTEGER, " + pillNaCol + " TEXT, " + pharmNaCol + " TEXT, " +
+                    pharmNumCol + " INTEGER, " + doctorNaCol + " TEXT, " + doctorNumCol + " INTEGER, " + pillTimeInMillisCol + " INTEGER, " + intervalCol +
+                    " INTEGER, " + pillCountCol + " INTEGER, " + infoCol + " TEXT);";
             db.execSQL(createTable);
         }
 
@@ -72,13 +71,11 @@ public class DatabaseManager {
 
     //returns all of the alarms thave have been created.
     public ArrayList<Pill> fetchAll() {
-        String cols[] = {pillIDCol, pillNaCol, pharmNaCol, pharmNumCol, doctorNaCol, doctorNumCol, nextPillHourCol, nextPillMinuteCol, intervalCol, pillCountCol, infoCol};
+        String cols[] = {pillIDCol, pillNaCol, pharmNaCol, pharmNumCol, doctorNaCol, doctorNumCol, pillTimeInMillisCol, intervalCol, pillCountCol, infoCol};
         Cursor cursor = db.query(DB_TABLE, cols, null, null, null, null, pillNaCol);
         cursor.moveToFirst();
         ArrayList<Pill> pillArrayList = new ArrayList<>();
         while (!cursor.isAfterLast()) {
-            //String id = cursor.getString(0);
-            //Long idLong = Long.parseLong(id);
             Pill p = new Pill(cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getString(2),
@@ -88,8 +85,7 @@ public class DatabaseManager {
                     cursor.getInt(6),
                     cursor.getInt(7),
                     cursor.getInt(8),
-                    cursor.getInt(9),
-                    cursor.getString(10));
+                    cursor.getString(9));
             pillArrayList.add(p);
             cursor.moveToNext();
         }
@@ -99,15 +95,14 @@ public class DatabaseManager {
         return pillArrayList;
     }
 
-    public boolean updateRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info) {
+    public boolean updateRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int interval, int pillCount, String info) {
         ContentValues updatePill = new ContentValues();
         updatePill.put(pillNaCol, pillName);
         updatePill.put(pharmNaCol, pharmacy);
         updatePill.put(pharmNumCol, pharmNum);
         updatePill.put(doctorNaCol, doctor);
         updatePill.put(doctorNumCol, doctorNum);
-        updatePill.put(nextPillHourCol, hour);
-        updatePill.put(nextPillMinuteCol, minute);
+        updatePill.put(pillTimeInMillisCol, pillTimeInMillis);
         updatePill.put(intervalCol, interval);
         updatePill.put(pillCountCol, pillCount);
         updatePill.put(infoCol, info);
@@ -121,7 +116,7 @@ public class DatabaseManager {
     }
 
     //adds a new alarm to the system.
-    public boolean addRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info) {
+    public boolean addRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int interval, int pillCount, String info) {
         ContentValues newPill = new ContentValues();
         newPill.put(pillIDCol, pillID);
         newPill.put(pillNaCol, pillName);
@@ -129,8 +124,7 @@ public class DatabaseManager {
         newPill.put(pharmNumCol, pharmNum);
         newPill.put(doctorNaCol, doctor);
         newPill.put(doctorNumCol, doctorNum);
-        newPill.put(nextPillHourCol, hour);
-        newPill.put(nextPillMinuteCol, minute);
+        newPill.put(pillTimeInMillisCol, pillTimeInMillis);
         newPill.put(intervalCol, interval);
         newPill.put(pillCountCol, pillCount);
         newPill.put(infoCol, info);
@@ -143,10 +137,21 @@ public class DatabaseManager {
         }
     }
 
+    public boolean pillTaken(Pill p){
+        ContentValues cv = new ContentValues();
+        cv.put(pillCountCol, p.getPillCount()-1);
+
+        try {
+            db.update(DB_TABLE, cv, p.getPillID().toString(), null);
+            return true;
+        } catch (Exception e) {
+            Log.e(DBTAG, "Error with pill taken.", e);
+            return false;
+        }
+    }
+
     public boolean deleteRow(Long pillID){
         try {
-            //String s = ("DELETE FROM " + DB_TABLE + " WHERE " + pillIDCol + " = " + pillID);
-            //db.execSQL(s);
             db.delete(DB_TABLE, pillIDCol + " = " + pillID, null);
             return true;
         }

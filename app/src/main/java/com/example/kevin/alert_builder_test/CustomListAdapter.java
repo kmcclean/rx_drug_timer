@@ -32,7 +32,6 @@ public class CustomListAdapter extends ArrayAdapter {
         mPillName = (TextView)v.findViewById(R.id.pill_name_adapter_view_text_view);
         mPillName.setText(p.getPillName());
         mNextTimeToTake = (TextView)v.findViewById(R.id.next_time_to_take_adapter_view_text_view);
-        //mNextTimeToTake.setText(p.getNextPillHour());
         mInfo = (TextView)v.findViewById(R.id.info_adapter_view_text_view);
         mInfo.setText(p.getInformation());
         return v;

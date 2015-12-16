@@ -2,141 +2,136 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/pill_dialog_layout">
+    android:id="@+id/pill_dialog_layout"
+    >
 
-                <TextView
-                    android:text="@string/pill_name_text_view"
-                    android:id="@+id/pill_name_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <EditText
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+            android:text="@string/pill_name_text_view"
+            android:id="@+id/pill_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:text="@string/pharmacy_text_view"
+                android:id="@+id/pharmacy_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:text="@string/pharmacy_no_text_view"
+                android:id="@+id/pharmacy_no_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
                     android:id="@+id/pill_name_edit_text"
                     android:text="Aspirin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <EditText
+                android:id="@+id/pharmacy_edit_text"
+                android:text="Walgreens"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <EditText
+                    android:id="@+id/pharmacy_no_edit_text"
+                    android:text="5554321"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:layout_weight="1" />
+        </TableRow>
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-                    <TextView
-                        android:text="@string/pharmacy_text_view"
-                        android:id="@+id/pharmacy_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/doctor_text_view"
+                android:id="@+id/doctor_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
 
-                    <TextView
-                            android:text="@string/pharmacy_no_text_view"
-                            android:id="@+id/pharmacy_no_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                </LinearLayout>
+            <TextView
+                android:text="@string/doctor_no_text_view"
+                android:id="@+id/doctor_no_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2" />
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+            <TextView
+                android:text="@string/pill_count_text_view"
+                android:id="@+id/pill_count_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-                    <EditText
-                        android:id="@+id/pharmacy_edit_text"
-                        android:text="Walgreens"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+            <TextView
+                android:text="@string/interval_text_view"
+                android:id="@+id/interval_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </TableRow>
 
-                    <EditText
-                            android:id="@+id/pharmacy_no_edit_text"
-                            android:text="5554321"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                </LinearLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <EditText
+                    android:id="@+id/doctor_edit_text"
+                    android:text="Dr. McClean"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                android:layout_weight="2" />
 
-                    <TextView
-                        android:text="@string/doctor_text_view"
-                        android:id="@+id/doctor_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/doctor_no_edit_text"
+                android:text="5551234"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:phoneNumber="true"
+                android:inputType="phone" />
 
-                    <TextView
-                        android:text="@string/doctor_no_text_view"
-                        android:id="@+id/doctor_no_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+            <EditText
+                android:id="@+id/pill_count_edit_text"
+                android:text="30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/interval_edit_text"
+                android:text="8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </TableRow>
 
-                    <EditText
-                            android:id="@+id/doctor_edit_text"
-                            android:text="Dr. McClean"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+    </TableLayout>
 
-                    <EditText
-                        android:id="@+id/doctor_no_edit_text"
-                        android:text="5551234"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="@string/time_to_take_text_view"
-                        android:id="@+id/alarm_time_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:text="@string/interval_text_view"
-                        android:id="@+id/interval_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TimePicker
-                        android:id="@+id/first_drug_time_picker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </TimePicker>
-
-                    <EditText
-                        android:id="@+id/interval_edit_text"
-                        android:text="8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-    <TextView
-        android:text="@string/pill_count_text_view"
-        android:id="@+id/pill_count_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-
-    <EditText
-        android:id="@+id/pill_count_edit_text"
-        android:text="30"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <TextView
         android:text="@string/info_text_view"
@@ -146,8 +141,20 @@
 
     <EditText
             android:id="@+id/info_edit_text"
-            android:text="This is a test to see how well it works."
+            android:text="Take with food."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="@string/time_to_take_text_view"
+        android:id="@+id/alarm_time_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TimePicker
+        android:id="@+id/first_drug_time_picker"
+        android:layout_width="302dp"
+        android:layout_height="222dp">
+    </TimePicker>
 
 </LinearLayout>
