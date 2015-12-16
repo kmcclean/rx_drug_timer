@@ -39,6 +39,11 @@ public class MainActivity extends ListActivity {
         cla = new CustomListAdapter(this, savedPills);
         lv = (ListView) findViewById(android.R.id.list);
         lv.setAdapter(cla);
+
+        for(Pill p : savedPills){
+            createAlarm(p);
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,6 +53,7 @@ public class MainActivity extends ListActivity {
                 pd.show(fm, "TAG");
             }
         });
+
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -63,28 +69,16 @@ public class MainActivity extends ListActivity {
         });
     }
 
-    //this method exists at the moment to test out the database and make sure everything is working properly.
-    public boolean addNewPill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info){
+    public boolean addNewPill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute,  int pillCount, int interval, String info){
 
-        Calendar c = Calendar.getInstance();
+        long millis = turnTimeIntoMillis(hour, minute);
 
-        c.set(Calendar.HOUR_OF_DAY, hour);
-        c.set(Calendar.MINUTE, minute);
-
-        if(System.currentTimeMillis() > c.getTimeInMillis()){
-            c.set(Calendar.DATE, c.DATE + 1);
-        }
 
         Log.e("MA", "System Millis: " + System.currentTimeMillis());
-        Log.e("MA", "Alarm Millis: " + c.getTimeInMillis());
-        Log.e("MA", "Year: " + c.YEAR);
-        Log.e("MA", "Month: " + c.MONTH);
-        Log.e("MA", "Date: " + c.DATE);
-        Log.e("MA", "Hour: " + c.HOUR);
-        Log.e("MA", "Minute: " + c.MINUTE);
+        Log.e("MA", "Alarm Millis: " + millis);
 
-        if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, c.getTimeInMillis(), interval, pillCount, info)){
-            Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum,c.getTimeInMillis(), interval, pillCount, info);
+        if(databaseManager.addRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, millis, pillCount, interval, info)){
+            Pill p = new Pill(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, millis, pillCount, interval, info);
             if(createAlarm(p)){
                 savedPills.add(p);
                 updateAdapter();
@@ -129,19 +123,14 @@ public class MainActivity extends ListActivity {
     }
 
 
-    public void updatePill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int interval, int pillCount, String info){
+    public void updatePill(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, int hour, int minute, int pillCount, int interval, String info){
 
-        Calendar c = new GregorianCalendar();
-        c.set(Calendar.YEAR, Calendar.MONTH, Calendar.DATE + 1, hour, minute);
+        long millis = turnTimeIntoMillis(hour, minute);
+
         Log.e("MA", "System Millis: " + System.currentTimeMillis());
-        Log.e("MA", "Alarm Millis: " + c.getTimeInMillis());
-        Log.e("MA", "Year: " + c.YEAR);
-        Log.e("MA", "Month: " + c.MONTH);
-        Log.e("MA", "Date: " + c.DATE);
-        Log.e("MA", "Hour: " + c.HOUR);
-        Log.e("MA", "Minute: " + c.MINUTE);
+        Log.e("MA", "Alarm Millis: " + millis);
 
-        if(databaseManager.updateRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, c.getTimeInMillis(), interval, pillCount, info)){
+        if(databaseManager.updateRow(pillID, pillName, pharmacy, pharmNum, doctor, doctorNum, millis, pillCount, interval, info)){
             for (Pill pill: savedPills){
                 if(pill.getPillID().equals(pillID)){
                     pill.setPillName(pillName);
@@ -150,7 +139,7 @@ public class MainActivity extends ListActivity {
                     pill.setDoctorName(doctor);
                     pill.setDoctorNo(doctorNum);
                     pill.setIntervalLength(interval);
-                    pill.setNextTimeInMillis(c.getTimeInMillis());
+                    pill.setNextTimeInMillis(millis);
                     pill.setPillCount(pillCount);
                     pill.setInformation(info);
                 }
@@ -200,6 +189,20 @@ public class MainActivity extends ListActivity {
             Log.e("MA", "Error: " + e.toString());
             return false;
         }
+    }
+
+    public long turnTimeIntoMillis(int hour, int minute){
+
+        Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.HOUR_OF_DAY, hour);
+        c.set(Calendar.MINUTE, minute);
+
+        while(System.currentTimeMillis() > c.getTimeInMillis()){
+            c.set(Calendar.DATE, c.DATE + 1);
+        }
+
+        return c.getTimeInMillis();
     }
 
     @Override

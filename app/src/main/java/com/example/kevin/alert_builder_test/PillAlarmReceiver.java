@@ -29,9 +29,7 @@ public class PillAlarmReceiver extends WakefulBroadcastReceiver {
         notificationIntent.putExtras(newBundle);
         notificationIntent.putExtra("bundle", newBundle);
 
-        PendingIntent notification = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
+        PendingIntent notification = PendingIntent.getActivity(context, notificationId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder nb = new Notification.Builder(context);

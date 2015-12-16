@@ -46,7 +46,7 @@ public class PillDialogExists extends DialogFragment{
             mIntervalEditText.setText(interval.toString());
 
             mPharmacyEditText = (EditText) v.findViewById(R.id.pharmacy_edit_text);
-            mPharmacyEditText.setText(p.pharmacyName);
+            mPharmacyEditText.setText(p.getPharmacyName());
 
             mPharmacyNoEditText = (EditText) v.findViewById(R.id.pharmacy_no_edit_text);
             Long pharmacyNumber = p.getPharmacyNo();

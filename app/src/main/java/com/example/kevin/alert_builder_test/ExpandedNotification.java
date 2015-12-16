@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -54,8 +55,6 @@ public class ExpandedNotification extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 PillDueActivity a = (PillDueActivity) getActivity();
-                long newTime = p.getNextTimeInMillis() + (p.getIntervalLength() * 3600000);
-                p.setNextTimeInMillis(newTime);
                 a.pillHasBeenTaken(p);
 
             }

@@ -28,7 +28,7 @@ public class Pill implements Parcelable{
     protected String information;
     protected Long pillID;
 
-    public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, long pillInMillis, int intervalLength, int pillCountRemaining, String information){
+    public Pill (Long id, String pillName, String pharmacyName, Long pharmacyNo, String doctorName, Long doctorNo, long pillInMillis, int pillCountRemaining, int intervalLength, String information){
         this.pillName = pillName;
         this.pharmacyName = pharmacyName;
         this.pharmacyNo = pharmacyNo;
@@ -112,10 +112,6 @@ public class Pill implements Parcelable{
 
     public void setPillCount(int pillCount) {
         this.pillCount = pillCount;
-    }
-
-    public void setPillID(Long pillID) {
-        this.pillID = pillID;
     }
 
     public void setPillName(String pillName) {

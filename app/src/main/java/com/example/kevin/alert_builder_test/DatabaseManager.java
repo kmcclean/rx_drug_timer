@@ -71,7 +71,7 @@ public class DatabaseManager {
 
     //returns all of the alarms thave have been created.
     public ArrayList<Pill> fetchAll() {
-        String cols[] = {pillIDCol, pillNaCol, pharmNaCol, pharmNumCol, doctorNaCol, doctorNumCol, pillTimeInMillisCol, intervalCol, pillCountCol, infoCol};
+        String cols[] = {pillIDCol, pillNaCol, pharmNaCol, pharmNumCol, doctorNaCol, doctorNumCol, pillTimeInMillisCol, pillCountCol, intervalCol, infoCol};
         Cursor cursor = db.query(DB_TABLE, cols, null, null, null, null, pillNaCol);
         cursor.moveToFirst();
         ArrayList<Pill> pillArrayList = new ArrayList<>();
@@ -95,7 +95,7 @@ public class DatabaseManager {
         return pillArrayList;
     }
 
-    public boolean updateRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int interval, int pillCount, String info) {
+    public boolean updateRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int pillCount, int interval, String info) {
         ContentValues updatePill = new ContentValues();
         updatePill.put(pillNaCol, pillName);
         updatePill.put(pharmNaCol, pharmacy);
@@ -116,7 +116,7 @@ public class DatabaseManager {
     }
 
     //adds a new alarm to the system.
-    public boolean addRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int interval, int pillCount, String info) {
+    public boolean addRow(Long pillID, String pillName, String pharmacy, long pharmNum, String doctor, long doctorNum, long pillTimeInMillis, int pillCount, int interval, String info) {
         ContentValues newPill = new ContentValues();
         newPill.put(pillIDCol, pillID);
         newPill.put(pillNaCol, pillName);
@@ -140,6 +140,7 @@ public class DatabaseManager {
     public boolean pillTaken(Pill p){
         ContentValues cv = new ContentValues();
         cv.put(pillCountCol, p.getPillCount()-1);
+        cv.put(pillTimeInMillisCol, p.getNextTimeInMillis());
 
         try {
             db.update(DB_TABLE, cv, p.getPillID().toString(), null);
